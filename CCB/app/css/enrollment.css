@@ -1,0 +1,399 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .header-bar {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .main-header {
+            background-color: white;
+            border-bottom: 3px solid #1e3a8a;
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        .university-logo {
+            width: 80px;
+            height: 80px;
+            background-color: #1e3a8a;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .main-header h1 {
+            font-size: 2.2rem;
+            color: #1e3a8a;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+
+        .main-header h2 {
+            font-size: 1.4rem;
+            color: #374151;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .academic-year {
+            font-size: 1rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-header {
+            background-color: #f3f4f6;
+            padding: 25px 40px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .form-header h3 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .form-instructions {
+            font-size: 0.95rem;
+            color: #4b5563;
+            margin-bottom: 15px;
+        }
+
+        .required-notice {
+            background-color: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .section-header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 12px 20px;
+            margin: 30px -40px 25px -40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-header:first-child {
+            margin-top: 0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        input, select, textarea {
+            padding: 10px 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+            background-color: white;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-section {
+            margin: 20px 0;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background-color: #f9fafb;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .document-requirements {
+            background-color: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .document-requirements h4 {
+            color: #0c4a6e;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .document-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .document-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0f2fe;
+        }
+
+        .document-list li:last-child {
+            border-bottom: none;
+        }
+
+        .document-list li:before {
+            content: "•";
+            color: #0ea5e9;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .declaration-section {
+            background-color: #fef7f7;
+            border: 2px solid #f87171;
+            border-radius: 6px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .declaration-section h4 {
+            color: #991b1b;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .declaration-text {
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .signature-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .signature-field {
+            border-bottom: 2px solid #374151;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .signature-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-section {
+            border-top: 2px solid #e5e7eb;
+            padding: 25px 40px;
+            background-color: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background-color: #1e3a8a;
+            color: white;
+            border-color: #1e3a8a;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e40af;
+            border-color: #1e40af;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f3f4f6;
+        }
+
+        .application-number {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .success-page {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background-color: #059669;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 30px;
+        }
+
+        .reference-number {
+            background-color: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 25px 0;
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0c4a6e;
+        }
+
+        .footer-info {
+            background-color: #f3f4f6;
+            padding: 20px 40px;
+            border-top: 1px solid #d1d5db;
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 15px;
+            }
+            
+            .form-container, .btn-section {
+                padding: 25px 20px;
+            }
+            
+            .section-header {
+                margin-left: -20px;
+                margin-right: -20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .signature-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .btn-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        .error {
+            border-color: #dc2626 !important;
+            background-color: #fef2f2;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }

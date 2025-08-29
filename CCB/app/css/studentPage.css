@@ -1,0 +1,369 @@
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --info-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .controls-section {
+            padding: 2rem;
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-input {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 15px 50px 15px 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .action-btn {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 25px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .bulk-actions {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .bulk-actions.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .student-grid {
+            padding: 0 2rem 2rem 2rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 10px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+
+
+        /* Card View Styles */
+        .card-view {
+            display: none;
+        }
+
+        .card-view.active {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .student-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .student-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .student-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .student-id {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .student-info {
+            margin: 1rem 0;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .info-icon {
+            width: 20px;
+            color: #6c757d;
+            margin-right: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .status-approved {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .status-pending {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .status-rejected {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .status-waitlist {
+            background: var(--info-gradient);
+            color: #2c3e50;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .card-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-edit {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .pagination-container {
+            padding: 2rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            background: white;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .pagination-info {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .pagination .page-link {
+            border: none;
+            padding: 10px 15px;
+            margin: 0 2px;
+            border-radius: 10px;
+            color: #667eea;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .pagination .page-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .pagination .page-item.active .page-link {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.5rem;
+        }
+
+        .floating-add-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-add-btn:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 0.5rem;
+                border-radius: 15px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .header-stats {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .controls-section {
+                padding: 1rem;
+            }
+
+            .student-grid {
+                padding: 0 1rem 1rem 1rem;
+            }
+
+            .card-view.active {
+                grid-template-columns: 1fr;
+            }
+
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+        }
