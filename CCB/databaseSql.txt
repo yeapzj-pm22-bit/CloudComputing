@@ -1,0 +1,229 @@
+-- Complete Database Reset Script for University Portal
+-- This will drop and recreate everything with ALL required columns
+
+-- Drop the database if it exists
+DROP DATABASE IF EXISTS university_portal;
+
+-- Create the database with proper charset
+CREATE DATABASE university_portal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Use the database
+USE university_portal;
+
+-- Users table with all required columns including updated_at
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    date_of_birth DATE NOT NULL,
+    phone_number VARCHAR(50) NOT NULL,
+    account_type ENUM('Student', 'Admin') NOT NULL DEFAULT 'Student',
+    password_hash VARCHAR(255) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    email_verified BOOLEAN DEFAULT FALSE,
+    last_login TIMESTAMP NULL,
+    reset_token VARCHAR(64) NULL,
+    reset_token_expiry TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_email (email),
+    INDEX idx_account_type (account_type),
+    INDEX idx_created_at (created_at)
+);
+
+-- Personal information table
+CREATE TABLE personal (
+    personal_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT DEFAULT NULL,
+    application_number VARCHAR(20) UNIQUE NOT NULL,
+    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    nationality VARCHAR(100) NOT NULL,
+    address TEXT NOT NULL,
+    emergency_contact_name VARCHAR(200),
+    emergency_contact_phone VARCHAR(50),
+    emergency_contact_relationship VARCHAR(100),
+    status ENUM('submitted','under-review','interview-scheduled','approved','rejected','waitlisted','enrolled','graduated','deleted') DEFAULT 'submitted',
+    application_fee_paid BOOLEAN DEFAULT FALSE,
+    application_fee_amount DECIMAL(10,2),
+    received DATE,
+    reviewed_by INT NULL,
+    reviewed_at TIMESTAMP NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (reviewed_by) REFERENCES users(user_id) ON DELETE SET NULL,
+    INDEX idx_user_id (user_id),
+    INDEX idx_application_number (application_number),
+    INDEX idx_status (status),
+    INDEX idx_received (received)
+);
+
+-- Academic information table
+CREATE TABLE academic (
+    academic_id INT AUTO_INCREMENT PRIMARY KEY,
+    personal_id INT NOT NULL,
+    program VARCHAR(150) NOT NULL,
+    program_level ENUM('Certificate', 'Diploma', 'Bachelor', 'Master', 'PhD') NOT NULL,
+    program_category VARCHAR(100),
+    enrollment_type ENUM('Full-Time', 'Part-Time') NOT NULL,
+    start_term VARCHAR(50) NOT NULL,
+    expected_graduation_year YEAR,
+    preferred_campus VARCHAR(100),
+    scholarship_applied BOOLEAN DEFAULT FALSE,
+    scholarship_type VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (personal_id) REFERENCES personal(personal_id) ON DELETE CASCADE,
+    INDEX idx_personal_id (personal_id),
+    INDEX idx_program (program),
+    INDEX idx_program_level (program_level)
+);
+
+-- Educational background table
+CREATE TABLE educational (
+    educational_id INT AUTO_INCREMENT PRIMARY KEY,
+    personal_id INT NOT NULL,
+    education_level ENUM('High School', 'Foundation', 'Diploma', 'Bachelor', 'Master', 'Other') NOT NULL DEFAULT 'High School',
+    institution_name VARCHAR(200) NOT NULL,
+    graduation_year YEAR NOT NULL,
+    grade_type VARCHAR(50),
+    grade_value VARCHAR(100),
+    subjects_count INT,
+    certificate_number VARCHAR(100),
+    verification_status ENUM('pending', 'verified', 'rejected') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (personal_id) REFERENCES personal(personal_id) ON DELETE CASCADE,
+    INDEX idx_personal_id (personal_id),
+    INDEX idx_education_level (education_level)
+);
+
+-- Document management table (FIXED: Added updated_at column)
+CREATE TABLE documents (
+    document_id INT AUTO_INCREMENT PRIMARY KEY,
+    personal_id INT NOT NULL,
+    document_type ENUM('transcript', 'certificate', 'identity', 'photo', 'recommendation_letter', 'personal_statement', 'portfolio', 'other') NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    stored_filename VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_size INT NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    uploaded_by INT,
+    verification_status ENUM('pending', 'verified', 'rejected') DEFAULT 'pending',
+    verification_notes TEXT,
+    is_required BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (personal_id) REFERENCES personal(personal_id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(user_id) ON DELETE SET NULL,
+    INDEX idx_personal_id (personal_id),
+    INDEX idx_document_type (document_type),
+    INDEX idx_verification_status (verification_status)
+);
+
+-- Application status history
+CREATE TABLE application_status_history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    personal_id INT NOT NULL,
+    old_status VARCHAR(50),
+    new_status VARCHAR(50) NOT NULL,
+    changed_by INT NOT NULL,
+    change_reason TEXT,
+    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (personal_id) REFERENCES personal(personal_id) ON DELETE CASCADE,
+    FOREIGN KEY (changed_by) REFERENCES users(user_id) ON DELETE RESTRICT,
+    INDEX idx_personal_id (personal_id),
+    INDEX idx_change_date (change_date)
+);
+
+-- System notifications (FIXED: Added updated_at column)
+CREATE TABLE notifications (
+    notification_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    message TEXT NOT NULL,
+    type ENUM('info', 'success', 'warning', 'error') DEFAULT 'info',
+    is_read BOOLEAN DEFAULT FALSE,
+    related_application_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    read_at TIMESTAMP NULL,
+    
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (related_application_id) REFERENCES personal(personal_id) ON DELETE SET NULL,
+    INDEX idx_user_id (user_id),
+    INDEX idx_is_read (is_read),
+    INDEX idx_created_at (created_at)
+);
+
+-- System settings
+CREATE TABLE system_settings (
+    setting_id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(100) NOT NULL UNIQUE,
+    setting_value TEXT NOT NULL,
+    description TEXT,
+    updated_by INT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (updated_by) REFERENCES users(user_id) ON DELETE SET NULL,
+    INDEX idx_setting_key (setting_key)
+);
+
+-- Insert test data
+-- Admin user (password: admin123)
+INSERT INTO users (first_name, last_name, email, date_of_birth, phone_number, account_type, password_hash, is_active, email_verified) VALUES
+('Admin', 'User', 'admin@university.edu', '1990-01-01', '+1234567890', 'Admin', '$2y$12$lmEZrgUnnbhRA9e/nChOWO2PQyUMhAToZOIi3IgAIKBCvdmG5DlsS', TRUE, TRUE),
+('Test', 'Student', 'student@test.com', '2000-01-01', '+1234567891', 'Student', '$2y$12$uWuO8Vqo9EqHYNKWbEWDEOKeiWaSGnePGcGGGfIbfEROypUEThPyq', TRUE, TRUE);
+
+-- System settings
+INSERT INTO system_settings (setting_key, setting_value, description) VALUES
+('application_fee', '50.00', 'Default application fee amount'),
+('max_file_size', '5242880', 'Maximum file upload size in bytes (5MB)'),
+('allowed_file_types', 'pdf,jpg,jpeg,png,doc,docx', 'Allowed file extensions for uploads'),
+('application_deadline', '2024-12-31', 'Application deadline date'),
+('academic_year', '2024-2025', 'Current academic year'),
+('enrollment_status', 'open', 'Enrollment status: open, closed, maintenance');
+
+-- Verify the structure and updated_at columns
+SELECT 'Database setup completed successfully!' as Status;
+
+-- Show all tables with updated_at columns
+SELECT 
+    table_name,
+    column_name,
+    data_type,
+    is_nullable,
+    column_default
+FROM information_schema.columns 
+WHERE table_schema = 'university_portal' 
+AND column_name = 'updated_at'
+ORDER BY table_name;
+
+-- Test login credentials
+SELECT 'Login Credentials for Testing:' as Info;
+SELECT 
+    CONCAT(first_name, ' ', last_name) as Name,	
+    email as Email,
+    account_type as Role,
+    CASE 
+        WHEN account_type = 'Admin' THEN 'admin123'
+        WHEN account_type = 'Student' THEN 'student123'
+    END as Password
+FROM users 
+ORDER BY account_type;
+
+
+
+
+ALTER TABLE personal 
+ADD COLUMN admin_notifications_created TIMESTAMP NULL 
+AFTER notes;

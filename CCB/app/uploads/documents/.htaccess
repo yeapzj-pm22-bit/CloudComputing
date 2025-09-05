@@ -1,0 +1,13 @@
+# Prevent direct access to uploaded files
+# Files should only be accessed through the application
+Options -Indexes
+<Files "*">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Allow specific file types for download through PHP
+<FilesMatch "\.(pdf|jpg|jpeg|png|doc|docx)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
