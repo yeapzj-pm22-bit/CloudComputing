@@ -205,12 +205,22 @@ class S3FileUploadHelper {
             ob_end_clean();
         }
         
-        // Set appropriate headers
+        // Set basic headers
         header('Content-Type: ' . ($document['mime_type'] ?: 'application/octet-stream'));
         header('Content-Length: ' . strlen($result['Body']));
-        header('Content-Disposition: attachment; filename="' . $document['original_filename'] . '"');
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: 0');
+        
+        // CRITICAL: Check if this is download or preview
+        $isDownload = $forceDownload || (isset($_GET['download']) && $_GET['download'] == '1');
+        
+        if ($isDownload) {
+            // Force download
+            header('Content-Disposition: attachment; filename="' . $document['original_filename'] . '"');
+        } else {
+            // Show inline (preview)
+            header('Content-Disposition: inline; filename="' . $document['original_filename'] . '"');
+        }
         
         // Output file content directly
         echo $result['Body'];
@@ -315,5 +325,6 @@ class S3FileUploadHelper {
         }
     }
 }
+
 
 
