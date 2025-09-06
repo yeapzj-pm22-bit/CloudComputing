@@ -2606,33 +2606,7 @@ function getDashboardStats()
                 return;
             }
             pdfPreview.innerHTML = `
-        <iframe src="${pdfUrl}" 
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; margin: 0; padding: 0;"
-                onload="console.log('PDF iframe loaded successfully')"
-                onerror="console.log('PDF iframe failed to load')">
-        </iframe>
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                    background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                    text-align: center; z-index: 1; display: none;" id="pdfFallback">
-            <i class="fas fa-file-pdf fa-4x text-primary mb-3"></i>
-            <h4>PDF Ready to View</h4>
-            <p class="text-muted mb-4">
-                Your browser cannot display PDFs inline.<br>
-                Click below to view in a new tab where it will work perfectly.
-            </p>
-            <div class="d-grid gap-2" style="max-width: 300px; margin: 0 auto;">
-                <a href="${pdfUrl}" target="_blank" rel="noopener" 
-                   class="btn btn-primary btn-lg">
-                    <i class="fas fa-external-link-alt me-2"></i>
-                    Open PDF in New Tab
-                </a>
-                <a href="${pdfUrl}&download=1" 
-                   class="btn btn-outline-secondary">
-                    <i class="fas fa-download me-2"></i>
-                    Download PDF
-                </a>
-            </div>
-        </div>
+        
     `;
 
             console.log('PDF HTML content set');
