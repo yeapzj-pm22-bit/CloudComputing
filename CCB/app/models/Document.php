@@ -17,7 +17,6 @@ class Document extends BaseModel {
         return $stmt->fetchAll();
     }
     
-    // FIXED: Added explicit nullable type for $notes parameter
     public function updateVerificationStatus(int $documentId, string $status, ?string $notes = null): bool {
         $data = ['verification_status' => $status];
         if ($notes !== null) {
@@ -33,12 +32,28 @@ class Document extends BaseModel {
         return $stmt->fetchAll();
     }
     
+    /**
+     * FIXED: Delete document record and S3 file
+     */
     public function deleteDocumentAndFile(int $documentId): bool {
         $document = $this->find($documentId);
-        if ($document && $this->delete($documentId)) {
-            // Only delete file if FileUploadHelper class exists
-            if (class_exists('FileUploadHelper')) {
-                FileUploadHelper::delete($document['file_path']);
+        if (!$document) {
+            return false;
+        }
+
+        // Delete from database first
+        if ($this->delete($documentId)) {
+            // Try to delete from S3 if S3FileUploadHelper is available
+            if (class_exists('S3FileUploadHelper')) {
+                // file_path contains the S3 key
+                $s3Key = $document['file_path'];
+                if ($s3Key) {
+                    $deleted = S3FileUploadHelper::deleteFile($s3Key);
+                    if (!$deleted) {
+                        error_log("Failed to delete S3 file: " . $s3Key);
+                        // Don't fail the operation if S3 delete fails
+                    }
+                }
             }
             return true;
         }
@@ -79,6 +94,8 @@ class Document extends BaseModel {
 
     /**
      * Upload and store document information
+     * NOTE: This method should primarily be used for database operations.
+     * For actual file uploads, use S3FileUploadHelper::uploadApplicationFiles()
      */
     public function uploadDocument($personalId, $documentType, $filename, $filePath, $fileSize, $mimeType, $uploadedBy, $isRequired = false) {
         try {
@@ -175,6 +192,27 @@ class Document extends BaseModel {
                 'rejected_documents' => 0,
                 'required_documents' => 0
             ];
+        }
+    }
+
+    /**
+     * Clean up orphaned S3 files (utility method for maintenance)
+     */
+    public function cleanupOrphanedS3Files() {
+        try {
+            // Get all S3 keys from database
+            $stmt = $this->pdo->prepare("SELECT file_path FROM {$this->table} WHERE file_path IS NOT NULL AND file_path != ''");
+            $stmt->execute();
+            $dbKeys = array_column($stmt->fetchAll(), 'file_path');
+            
+            // Note: You would need to implement S3 bucket listing in S3FileUploadHelper
+            // to compare with actual S3 contents and clean up orphaned files
+            error_log("Database contains " . count($dbKeys) . " S3 file references");
+            
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error in cleanup: " . $e->getMessage());
+            return false;
         }
     }
 }
