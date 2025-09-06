@@ -156,7 +156,7 @@ class S3FileUploadHelper {
     /**
      * Serve file - SAME interface as original but uses S3 presigned URLs
      */
-    public static function serveFile($documentId, $userId) {
+    public static function serveFile($documentId, $userId, $forceDownload = false) {
         $documentModel = new Document();
         $document = $documentModel->find($documentId);
         
@@ -213,6 +213,29 @@ class S3FileUploadHelper {
             http_response_code(500);
             exit('File access error');
         }
+
+        try {
+        $s3Key = $document['file_path'];
+        $presignedUrl = self::generatePresignedUrl($s3Key, 15);
+        
+        if (!$presignedUrl) {
+            http_response_code(500);
+            exit('Unable to access file');
+        }
+        
+        // Handle download disposition
+        if ($forceDownload || (isset($_GET['download']) && $_GET['download'] == '1')) {
+            $presignedUrl .= '&response-content-disposition=' . urlencode('attachment; filename="' . $document['original_filename'] . '"');
+        }
+        
+        header('Location: ' . $presignedUrl);
+        exit;
+        
+    } catch (Exception $e) {
+        error_log("Error serving S3 file: " . $e->getMessage());
+        http_response_code(500);
+        exit('File access error');
+    }
     }
     
     /**
