@@ -21,7 +21,12 @@ if (!$documentId) {
 
 error_log("Document viewer: Serving S3 document $documentId for user " . $_SESSION['user_id']);
 
-// Use S3FileUploadHelper instead of FileUploadHelper
+
+
+
+
 $isDownload = isset($_GET['download']) && $_GET['download'] == '1';
+error_log("Document viewer: Serving S3 document $documentId for user " . $_SESSION['user_id'] . 
+          ($isDownload ? ' (download)' : ' (preview)'));
 S3FileUploadHelper::serveFile($documentId, $_SESSION['user_id'], $isDownload);
 ?>
