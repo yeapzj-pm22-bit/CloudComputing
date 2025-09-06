@@ -192,27 +192,35 @@ class S3FileUploadHelper {
     
     // Generate presigned URL for secure access
     try {
-        $s3Key = $document['file_path']; // S3 key stored in file_path
-        $presignedUrl = self::generatePresignedUrl($s3Key, 15); // 15 minute expiry
+        $s3 = self::getS3Client();
         
-        if (!$presignedUrl) {
-            http_response_code(500);
-            exit('Unable to access file');
+        // DIRECT STREAMING (bypasses presigned URL issues)
+        $result = $s3->getObject([
+            'Bucket' => self::$bucketName,
+            'Key' => $document['file_path']
+        ]);
+        
+        // Clean any output buffers
+        while (ob_get_level()) {
+            ob_end_clean();
         }
         
-        // Handle download disposition - check both parameter and GET variable
-        if ($forceDownload || (isset($_GET['download']) && $_GET['download'] == '1')) {
-            $presignedUrl .= '&response-content-disposition=' . urlencode('attachment; filename="' . $document['original_filename'] . '"');
-        }
+        // Set appropriate headers
+        header('Content-Type: ' . ($document['mime_type'] ?: 'application/octet-stream'));
+        header('Content-Length: ' . strlen($result['Body']));
+        header('Content-Disposition: attachment; filename="' . $document['original_filename'] . '"');
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: 0');
         
-        // Redirect to presigned URL
-        header('Location: ' . $presignedUrl);
+        // Output file content directly
+        echo $result['Body'];
         exit;
         
     } catch (Exception $e) {
-        error_log("Error serving S3 file: " . $e->getMessage());
+        error_log("S3 download error: " . $e->getMessage());
         http_response_code(500);
-        exit('File access error');
+        echo "Download failed: " . $e->getMessage();
+        exit;
     }
 }
     
@@ -307,4 +315,5 @@ class S3FileUploadHelper {
         }
     }
 }
+
 
