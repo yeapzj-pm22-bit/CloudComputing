@@ -1,5 +1,5 @@
 <?php
-// staff/document_viewer.php
+// admin/document_viewer.php
 
 session_start();
 require_once '../includes/bootstrap.php';
@@ -22,13 +22,17 @@ if (
 $documentId = $_GET['id'] ?? 0;
 
 if (!$documentId) {
-    error_log("Staff document viewer: No document ID provided");
+    error_log("Staff document viewer: No document ID provided from IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
     http_response_code(400);
     exit('Document ID required');
 }
 
-error_log("Staff document viewer: Attempting to serve document $documentId for staff user " . $_SESSION['user_id']);
+// Check if this is a download request
+$isDownload = isset($_GET['download']) && $_GET['download'] == '1';
 
-// Use FileUploadHelper to serve the file securely
-FileUploadHelper::serveFile($documentId, $_SESSION['user_id']);
+error_log("Staff document viewer: Serving S3 document $documentId for staff user " . $_SESSION['user_id'] . 
+          ($isDownload ? ' (download)' : ' (preview)'));
+
+// Use S3FileUploadHelper instead of FileUploadHelper to serve the file securely
+S3FileUploadHelper::serveFile($documentId, $_SESSION['user_id'], $isDownload);
 ?>
