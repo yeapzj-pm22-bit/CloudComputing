@@ -2591,7 +2591,7 @@ function timeAgo($datetime)
 
             container.innerHTML = applications.map(app => {
                 // Determine which actions are available based on status
-                const editableStatuses = ['submitted', 'under-review'];
+                const editableStatuses = ['submitted'];
                 const deletableStatuses = ['submitted'];
 
                 const canEdit = editableStatuses.includes(app.status);
