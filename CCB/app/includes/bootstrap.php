@@ -20,6 +20,7 @@ require_once APP_ROOT . '/helpers/ValidationHelper.php';
 require_once APP_ROOT . '/helpers/ResponseHelper.php';
 require_once APP_ROOT . '/helpers/SessionHelper.php';
 require_once APP_ROOT . '/helpers/FileUploadHelper.php';
+require_once APP_ROOT . '/helpers/S3FileUploadHelper.php';
 
 // Include model classes (BaseModel must be first since others extend it)
 require_once APP_ROOT . '/models/BaseModel.php';
