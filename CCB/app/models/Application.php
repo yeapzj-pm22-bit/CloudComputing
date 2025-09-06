@@ -316,25 +316,26 @@ class Application extends BaseModel
 
             // FIXED: Handle file uploads if files are provided
             $uploadResults = ['uploaded' => [], 'errors' => []];
-
+            
             if (!empty($_FILES)) {
-                // Filter out files that weren't uploaded
-                $filesToUpload = array_filter($_FILES, function ($file) {
-                    return $file['error'] !== UPLOAD_ERR_NO_FILE;
-                });
+            // Filter out files that weren't uploaded
+            $filesToUpload = array_filter($_FILES, function ($file) {
+                return $file['error'] !== UPLOAD_ERR_NO_FILE;
+            });
 
-                if (!empty($filesToUpload)) {
-                    $uploadResults = FileUploadHelper::uploadApplicationFiles($personalId, $filesToUpload, $userId);
+            if (!empty($filesToUpload)) {
+                // MAIN CHANGE: Replace FileUploadHelper with S3FileUploadHelper
+                $uploadResults = S3FileUploadHelper::uploadApplicationFiles($personalId, $filesToUpload, $userId);
 
-                    // If file uploads failed, we might want to continue anyway
-                    // but log the errors
-                    if (!empty($uploadResults['errors'])) {
-                        foreach ($uploadResults['errors'] as $error) {
-                            error_log("File upload error during application creation: " . $error);
-                        }
+                // If file uploads failed, we might want to continue anyway
+                // but log the errors
+                if (!empty($uploadResults['errors'])) {
+                    foreach ($uploadResults['errors'] as $error) {
+                        error_log("S3 file upload error during application creation: " . $error);
                     }
                 }
             }
+        }
 
             $this->pdo->commit();
 
