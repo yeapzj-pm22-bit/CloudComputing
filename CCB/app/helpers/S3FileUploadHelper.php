@@ -157,77 +157,55 @@ class S3FileUploadHelper {
      * Serve file - SAME interface as original but uses S3 presigned URLs
      */
     public static function serveFile($documentId, $userId, $forceDownload = false) {
-        $documentModel = new Document();
-        $document = $documentModel->find($documentId);
+    $documentModel = new Document();
+    $document = $documentModel->find($documentId);
+    
+    if (!$document) {
+        error_log("Document not found: $documentId");
+        http_response_code(404);
+        exit('File not found');
+    }
+    
+    // Access control logic
+    $userModel = new User();
+    $currentUser = $userModel->getUserById($userId);
+    
+    if (!$currentUser) {
+        error_log("User not found: $userId");
+        http_response_code(403);
+        exit('Access denied');
+    }
+    
+    $isAdmin = ($currentUser['account_type'] === 'Admin' || $currentUser['account_type'] === 'Staff');
+    
+    // Non-admin users can only access their own documents
+    if (!$isAdmin) {
+        $applicationModel = new Application();
+        $application = $applicationModel->find($document['personal_id']);
         
-        if (!$document) {
-            error_log("Document not found: $documentId");
-            http_response_code(404);
-            exit('File not found');
-        }
-        
-        // SAME access control logic as original
-        $userModel = new User();
-        $currentUser = $userModel->getUserById($userId);
-        
-        if (!$currentUser) {
-            error_log("User not found: $userId");
+        if (!$application || $application['user_id'] != $userId) {
+            error_log("Access denied for document $documentId, user $userId");
             http_response_code(403);
             exit('Access denied');
         }
-        
-        $isAdmin = ($currentUser['account_type'] === 'Admin');
-        
-        if (!$isAdmin) {
-            $applicationModel = new Application();
-            $application = $applicationModel->find($document['personal_id']);
-            
-            if (!$application || $application['user_id'] != $userId) {
-                error_log("Access denied for document $documentId, user $userId");
-                http_response_code(403);
-                exit('Access denied');
-            }
-        }
-        
-        // Generate presigned URL for secure access
-        try {
-            $s3Key = $document['file_path']; // S3 key stored in file_path
-            $presignedUrl = self::generatePresignedUrl($s3Key, 15); // 15 minute expiry
-            
-            if (!$presignedUrl) {
-                http_response_code(500);
-                exit('Unable to access file');
-            }
-            
-            // Add download disposition if requested
-            if (isset($_GET['download']) && $_GET['download'] == '1') {
-                $presignedUrl .= '&response-content-disposition=' . urlencode('attachment; filename="' . $document['original_filename'] . '"');
-            }
-            
-            // Redirect to presigned URL
-            header('Location: ' . $presignedUrl);
-            exit;
-            
-        } catch (Exception $e) {
-            error_log("Error serving S3 file: " . $e->getMessage());
-            http_response_code(500);
-            exit('File access error');
-        }
-
-        try {
-        $s3Key = $document['file_path'];
-        $presignedUrl = self::generatePresignedUrl($s3Key, 15);
+    }
+    
+    // Generate presigned URL for secure access
+    try {
+        $s3Key = $document['file_path']; // S3 key stored in file_path
+        $presignedUrl = self::generatePresignedUrl($s3Key, 15); // 15 minute expiry
         
         if (!$presignedUrl) {
             http_response_code(500);
             exit('Unable to access file');
         }
         
-        // Handle download disposition
+        // Handle download disposition - check both parameter and GET variable
         if ($forceDownload || (isset($_GET['download']) && $_GET['download'] == '1')) {
             $presignedUrl .= '&response-content-disposition=' . urlencode('attachment; filename="' . $document['original_filename'] . '"');
         }
         
+        // Redirect to presigned URL
         header('Location: ' . $presignedUrl);
         exit;
         
@@ -236,7 +214,7 @@ class S3FileUploadHelper {
         http_response_code(500);
         exit('File access error');
     }
-    }
+}
     
     /**
      * Generate secure presigned URL
@@ -329,3 +307,4 @@ class S3FileUploadHelper {
         }
     }
 }
+
